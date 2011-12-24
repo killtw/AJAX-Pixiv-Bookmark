@@ -25,7 +25,7 @@ function main() {
     e.preventDefault();
     var tt = $('input[name="tt"]').val();
     var illust_id = $('div#rpc_i_id').attr('title');
-    
+
     $.ajax({
       url: 'bookmark_add.php',
       data: {
@@ -49,5 +49,20 @@ function main() {
     return false;
   });
 }
+
+(function() {
+var css = ".AutoPager_Related { display:none !important; }";
+if (typeof GM_addStyle != "undefined") {
+  GM_addStyle(css);
+} else {
+  var heads = document.getElementsByTagName("head");
+  if (heads.length > 0) {
+    var node = document.createElement("style");
+    node.type = "text/css";
+    node.appendChild(document.createTextNode(css));
+    heads[0].appendChild(node);
+  }
+}
+})();
 
 addJQuery(main);
