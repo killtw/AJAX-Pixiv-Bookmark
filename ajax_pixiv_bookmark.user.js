@@ -1,10 +1,11 @@
 // ==UserScript==
 // @id             ajax_pixiv_bookmark
 // @name           AJAX Pixiv Bookmark
-// @version        1.0
+// @version        1.0.1
 // @namespace      http://blog.k2ds.net/
 // @author         killtw
 // @description    Using AJAX to add a bookmark in Pixiv
+// @match          http://www.pixiv.net/member_illust.php?*
 // @include        http://www.pixiv.net/member_illust.php?*
 // ==/UserScript==
 
@@ -43,7 +44,8 @@ function main() {
       },
       success: function() {
         $('a.ui-button').text('加入成功');
-        $('div.bookmark').html('[ <a href="bookmark_detail.php?illust_id=' + illust_id + '">ブックマーク済み</a> | <a href="bookmark_add.php?type=illust&amp;illust_id=' + illust_id + '">編輯</a> ]').fadeIn("slow");
+//        $('div.bookmark').load('member_illust.php?mode=medium&illust_id='+illust_id+' div.bookmark');
+        $('div.bookmark').fadeOut('fast').html('[ <a href="bookmark_detail.php?illust_id=' + illust_id + '">ブックマーク済み</a> | <a href="bookmark_add.php?type=illust&amp;illust_id=' + illust_id + '">編輯</a> ]').fadeIn('fast');
       }
     });
     return false;
@@ -52,4 +54,4 @@ function main() {
 
 addJQuery(main);
 
-GM_addStyle(".AutoPager_Related { display:none !important; }");
+GM_addStyle(".AutoPager_Related, .ads_area { display:none !important; }");
