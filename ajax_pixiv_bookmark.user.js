@@ -22,7 +22,7 @@ function addJQuery(callback) {
 }
 
 function main() {
-  $('a._button').live('click', function(e) {
+  $("div.bookmark-container a._button").live('click', function(e) {
     e.preventDefault();
     var tt = $('input[name="tt"]').val();
     var illust_id = $('div#rpc_i_id').attr('title');
@@ -40,12 +40,12 @@ function main() {
       dataType: 'html',
       type: 'POST',
       beforeSend: function() {
-        $('a._button').text('追加中…');
+        $("div.bookmark-container a._button").text('追加中…');
       },
       success: function() {
-        $('a._button').text('加入成功');
+        $("div.bookmark-container a._button").text('加入成功');
 //        $('div.bookmark').load('member_illust.php?mode=medium&illust_id='+illust_id+' div.bookmark');
-        $('div.bookmark').fadeOut('fast').html('[ <a href="bookmark_detail.php?illust_id=' + illust_id + '">ブックマーク済み</a> | <a href="bookmark_add.php?type=illust&amp;illust_id=' + illust_id + '">編輯</a> ]').fadeIn('fast');
+        $('div.bookmark-container').fadeOut('fast').html('[ <a href="bookmark_detail.php?illust_id=' + illust_id + '">ブックマーク済み</a> | <a href="bookmark_add.php?type=illust&amp;illust_id=' + illust_id + '">編輯</a> ]').fadeIn('fast');
       }
     });
     return false;
