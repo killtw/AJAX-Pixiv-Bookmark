@@ -31,18 +31,26 @@ addjQuery = function(callback) {
 
 main = function() {
   $('div.bookmark-container a._button').click(function(e) {
-    var bookmark_tags;
+    var bookmark_tags, illust_tags, tag, _i, _len, _ref;
 
     e.preventDefault();
     bookmark_tags = [];
+    illust_tags = [];
+    _ref = $('a.text');
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      tag = _ref[_i];
+      illust_tags.push(tag.innerText);
+    }
+    console.log(illust_tags);
     $.get("http://www.pixiv.net/bookmark_tag_all.php", function(data) {
-      var tag, _i, _len, _ref;
+      var _j, _len1, _ref1;
 
-      _ref = $(data).find('a.tag-name');
-      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-        tag = _ref[_i];
+      _ref1 = $(data).find('a.tag-name');
+      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
+        tag = _ref1[_j];
         bookmark_tags.push(tag.innerText);
       }
+      console.log(bookmark_tags);
     });
   });
 };
