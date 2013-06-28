@@ -31,26 +31,61 @@ addjQuery = function(callback) {
 
 main = function() {
   $('div.bookmark-container a._button').click(function(e) {
-    var bookmark_tags, illust_tags, tag, _i, _len, _ref;
+    var illust_id, illust_tags, input_tag;
 
     e.preventDefault();
-    bookmark_tags = [];
     illust_tags = [];
-    _ref = $('a.text');
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      tag = _ref[_i];
-      illust_tags.push(tag.innerText);
-    }
-    console.log(illust_tags);
-    $.get("http://www.pixiv.net/bookmark_tag_all.php", function(data) {
-      var _j, _len1, _ref1;
+    input_tag = [];
+    illust_id = $('input[name="illust_id"]').val();
+    $.ajax({
+      url: 'http://www.pixiv.net/bookmark_tag_all.php',
+      type: 'GET',
+      dataType: 'html',
+      beforeSend: function() {
+        var tag, _i, _len, _ref;
 
-      _ref1 = $(data).find('a.tag-name');
-      for (_j = 0, _len1 = _ref1.length; _j < _len1; _j++) {
-        tag = _ref1[_j];
-        bookmark_tags.push(tag.innerText);
+        _ref = $('a.text');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          tag = _ref[_i];
+          illust_tags.push(tag.innerText);
+        }
+        return console.log(illust_tags);
+      },
+      success: function(data) {
+        var tag, _i, _len, _ref;
+
+        _ref = $(data).find('a.tag-name');
+        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+          tag = _ref[_i];
+          if (illust_tags.indexOf(tag.innerText) !== -1) {
+            input_tag.push(tag.innerText);
+          }
+        }
+        console.log(input_tag.join(' '));
+      },
+      complete: function() {
+        $.ajax({
+          url: 'bookmark_add.php',
+          data: {
+            mode: 'add',
+            tt: $('input[name="tt"]').val(),
+            id: illust_id,
+            tag: input_tag.join(' '),
+            type: 'illust',
+            form_sid: '',
+            restrict: '0'
+          },
+          dataType: 'html',
+          type: 'POST',
+          beforeSend: function() {
+            $("div.bookmark-container a._button").text('追加中…');
+          },
+          success: function() {
+            $("div.bookmark-container a._button").text('加入成功');
+            $('div.bookmark-container').fadeOut('fast').html('<a href="bookmark_add.php?type=illust&illust_id=' + illust_id + '" class="button-on">編輯收藏</a>').fadeIn('fast');
+          }
+        });
       }
-      console.log(bookmark_tags);
     });
   });
 };
