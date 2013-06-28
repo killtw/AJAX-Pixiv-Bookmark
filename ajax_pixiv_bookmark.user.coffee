@@ -2,12 +2,11 @@
 // ==UserScript==
 // @id             ajax_pixiv_bookmark
 // @name           AJAX Pixiv Bookmark
-// @version        2.0.0
+// @version        2.0.1
 // @namespace      http://blog.k2ds.net/
 // @author         killtw
 // @description    Using AJAX to add a bookmark in Pixiv
 // @match          http://www.pixiv.net/member_illust.php?*
-// @include        http://www.pixiv.net/member_illust.php?*
 // ==/UserScript==
 ###
 
@@ -35,12 +34,13 @@ main = () ->
       dataType: 'html'
       beforeSend: () ->
         for tag in $('a.text')
-          illust_tags.push tag.innerText
+          illust_tags.push tag.text
         console.log illust_tags
+        return
       success: (data) ->
         for tag in $(data).find('a.tag-name')
-          if illust_tags.indexOf(tag.innerText) isnt -1
-            input_tag.push tag.innerText
+          if illust_tags.indexOf(tag.text) isnt -1
+            input_tag.push tag.text
         console.log input_tag.join(' ')
         return
       complete: () ->
