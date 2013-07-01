@@ -2,7 +2,7 @@
 // ==UserScript==
 // @id             ajax_pixiv_bookmark
 // @name           AJAX Pixiv Bookmark
-// @version        2.0.1
+// @version        2.0.2
 // @namespace      http://blog.k2ds.net/
 // @author         killtw
 // @description    Using AJAX to add a bookmark in Pixiv
@@ -26,29 +26,41 @@ main = () ->
     e.preventDefault()
     illust_tags = []
     input_tag = []
-    illust_id = $('input[name="illust_id"]').val()
+    illust_id = document.URL.match(/\d+/)[0]
+    tt = $('input[name="tt"]').val()
 
     $.ajax
       url: 'http://www.pixiv.net/bookmark_tag_all.php'
       type: 'GET'
       dataType: 'html'
       beforeSend: () ->
-        for tag in $('a.text')
-          illust_tags.push tag.text
-        console.log illust_tags
+        if document.URL.match('manga')
+          $.ajax
+            url: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=#{illust_id}"
+            type: 'GET'
+            dataType: 'html'
+            async: false
+            success: (data) ->
+              for tag in $(data).find('a.text')
+                illust_tags.push tag.text
+              tt = $(data).find('input[name="tt"]')[0].value
+        else
+          for tag in $('a.text')
+            illust_tags.push tag.text
+        #console.log illust_tags
         return
       success: (data) ->
         for tag in $(data).find('a.tag-name')
           if illust_tags.indexOf(tag.text) isnt -1
             input_tag.push tag.text
-        console.log input_tag.join(' ')
+        #console.log input_tag.join(' ')
         return
       complete: () ->
         $.ajax
           url: 'bookmark_add.php'
           data:
             mode: 'add'
-            tt: $('input[name="tt"]').val()
+            tt: tt
             id: illust_id
             tag: input_tag.join(' ')
             type: 'illust'
