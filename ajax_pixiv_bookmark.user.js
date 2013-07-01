@@ -3,7 +3,7 @@
 // ==UserScript==
 // @id             ajax_pixiv_bookmark
 // @name           AJAX Pixiv Bookmark
-// @version        2.0.1
+// @version        2.0.2
 // @namespace      http://blog.k2ds.net/
 // @author         killtw
 // @description    Using AJAX to add a bookmark in Pixiv
@@ -30,12 +30,13 @@ addjQuery = function(callback) {
 
 main = function() {
   $('div.bookmark-container a._button').click(function(e) {
-    var illust_id, illust_tags, input_tag;
+    var illust_id, illust_tags, input_tag, tt;
 
     e.preventDefault();
     illust_tags = [];
     input_tag = [];
-    illust_id = $('input[name="illust_id"]').val();
+    illust_id = document.URL.match(/\d+/)[0];
+    tt = $('input[name="tt"]').val();
     $.ajax({
       url: 'http://www.pixiv.net/bookmark_tag_all.php',
       type: 'GET',
@@ -43,12 +44,30 @@ main = function() {
       beforeSend: function() {
         var tag, _i, _len, _ref;
 
-        _ref = $('a.text');
-        for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-          tag = _ref[_i];
-          illust_tags.push(tag.text);
+        if (document.URL.match('manga')) {
+          $.ajax({
+            url: "http://www.pixiv.net/member_illust.php?mode=medium&illust_id=" + illust_id,
+            type: 'GET',
+            dataType: 'html',
+            async: false,
+            success: function(data) {
+              var tag, _i, _len, _ref;
+
+              _ref = $(data).find('a.text');
+              for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+                tag = _ref[_i];
+                illust_tags.push(tag.text);
+              }
+              return tt = $(data).find('input[name="tt"]')[0].value;
+            }
+          });
+        } else {
+          _ref = $('a.text');
+          for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+            tag = _ref[_i];
+            illust_tags.push(tag.text);
+          }
         }
-        console.log(illust_tags);
       },
       success: function(data) {
         var tag, _i, _len, _ref;
@@ -60,14 +79,13 @@ main = function() {
             input_tag.push(tag.text);
           }
         }
-        console.log(input_tag.join(' '));
       },
       complete: function() {
         $.ajax({
           url: 'bookmark_add.php',
           data: {
             mode: 'add',
-            tt: $('input[name="tt"]').val(),
+            tt: tt,
             id: illust_id,
             tag: input_tag.join(' '),
             type: 'illust',
