@@ -7,6 +7,7 @@
 // @author         killtw
 // @description    Using AJAX to add a bookmark in Pixiv
 // @match          http://www.pixiv.net/member_illust.php?*
+// @match          http://www.pixiv.net/setting_user.php
 // ==/UserScript==
 ###
 
@@ -22,6 +23,15 @@ addjQuery = (callback) ->
     return
 
 main = () ->
+  settings =
+    default_tag: localStorage.default_tag
+
+  $('table tbody:eq(1)').append '
+  <tr><th>預設標籤</th><td>
+  <p>當沒有符合的標籤時將使用代入預設標籤，空白即不代入預設標籤</p>
+  <p><input type="text" name="default_tag" onkeyup="localStorage.setItem(\'default_tag\', this.value)" value="' + settings.default_tag + '"></p>
+  </td></tr>'
+
   $('div.bookmark-container a._button').click (e) ->
     e.preventDefault()
     illust_tags = []
@@ -54,6 +64,8 @@ main = () ->
           if illust_tags.indexOf(tag.text) isnt -1
             input_tag.push tag.text
         #console.log input_tag.join(' ')
+        if input_tag.length is 0
+          input_tag.push settings.default_tag
         return
       complete: () ->
         $.ajax
