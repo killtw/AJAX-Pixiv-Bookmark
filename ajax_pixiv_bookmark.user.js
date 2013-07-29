@@ -3,11 +3,12 @@
 // ==UserScript==
 // @id             ajax_pixiv_bookmark
 // @name           AJAX Pixiv Bookmark
-// @version        2.0.2
+// @version        2.0.3
 // @namespace      http://blog.k2ds.net/
 // @author         killtw
 // @description    Using AJAX to add a bookmark in Pixiv
 // @match          http://www.pixiv.net/member_illust.php?*
+// @match          http://www.pixiv.net/setting_user.php
 // ==/UserScript==
 */
 
@@ -29,6 +30,16 @@ addjQuery = function(callback) {
 };
 
 main = function() {
+  var settings;
+
+  settings = {
+    default_tag: localStorage.default_tag
+  };
+  $('table tbody:eq(1)').append('\
+  <tr><th>預設標籤</th><td>\
+  <p>當沒有符合的標籤時將使用代入預設標籤，空白即不代入預設標籤</p>\
+  <p><input type="text" name="default_tag" onkeyup="localStorage.setItem(\'default_tag\', this.value)" value="' + settings.default_tag + '"></p>\
+  </td></tr>');
   $('div.bookmark-container a._button').click(function(e) {
     var illust_id, illust_tags, input_tag, tt;
 
@@ -78,6 +89,9 @@ main = function() {
           if (illust_tags.indexOf(tag.text) !== -1) {
             input_tag.push(tag.text);
           }
+        }
+        if (input_tag.length === 0) {
+          input_tag.push(settings.default_tag);
         }
       },
       complete: function() {
